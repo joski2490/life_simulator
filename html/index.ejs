@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survival Sim</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="gameContainer">
+
+    </div>
+    <div class="statsContainer float-left-container">
+        <h2>Amount of Life Forms</h2>
+        <ul>
+            <li>Alive: <span id="currentAliveLife"></span></li>
+            <li>Dead: <span id="currentDeadLife"></span></li>
+            <li>Total: <span id="TotalLifeForms"></span></li>
+        </ul>
+
+        <h2>Average Fitness: <span id="averageFitness"></span></h2>
+        <h2>Average Age: <span id="averageAge"></span></h2>
+    </div>
+    <div class="statsContainer">
+        <h2>Particle <span id="randomParticleId"></span></h2><button onClick="newRandomParticle()">Watch new random particle.</button>
+        <ul>
+            <li>Particle ID: <span id="randomParticleId"></span></li>
+            <li>Particle Fitness: <span id="randomParticleFitness"></span></li>
+            <li>Particle Color: <span id="randomParticleColor"></span> <span id="randomParticleColorBlock">&#9632;</span></li>
+            <li>Particle Coordinates: <span id="randomParticleXandY"></span></li>
+            <li>Particle Age: <span id="randomParticleAge"></span></li>
+        </ul>
+    </div>
+    <script src="sim.js"></script>
+    <script>
+        let world = new WorldSim();
+        world.init();
+        world.start(200);
+
+        function calcStats() {
+            let cAlive = document.getElementById('currentAliveLife');
+            let Dead = document.getElementById('currentDeadLife');
+            let Total = document.getElementById('TotalLifeForms');
+            let aFit = document.getElementById('averageFitness');
+            let aAge = document.getElementById('averageAge');
+
+            cAlive.innerText = world.lifeCounter;
+            Dead.innerText = world.deadCounter;
+            Total.innerText = world.totalLifeCounter;
+            
+            let aC = 0;
+            let aA = 0;
+
+            let ageA = 0;
+
+            for(let l of Object.values(world.life)) {
+                aC++;
+                ageA += l.age;
+                aA += l.fitness;
+            }
+
+            aFit.innerText = (aA / aC).toFixed(2);
+            aAge.innerText = Math.trunc(ageA / aC);
+
+            setTimeout(calcStats, 500);
+        }
+
+        function newRandomParticle() {
+            let rp = world.life[Math.floor(Math.random() * Object.keys(world.life).length)];
+
+            if(!rp) return newRandomParticle();
+
+            let rpd = document.querySelectorAll('#randomParticleId');
+            let rpf = document.getElementById('randomParticleFitness');
+            let rpc = document.getElementById('randomParticleColor');
+            // let rpxy = document.getElementById('randomParticleXandY');
+            let rpa = document.getElementById('randomParticleAge');
+            let rpcb = document.getElementById('randomParticleColorBlock');
+
+            for(let i of rpd) {
+                i.innerText = rp.id;
+            }
+
+            rpf.innerText = rp.fitness;
+            rpcb.style.color = rp.color;
+            rpcb.style.fontSize = '1.5rem';
+            rpc.innerText = rp.color;
+            // rpxy.innerText = `{x: ${rp.x}, y: ${rp.y}}`;
+            rpa.innerText = rp.age;
+
+        }
+
+        function calculateAndSetStatsInterval() {
+            let cpe = document.getElementById('randomParticleId').innerText;
+
+            let rp = world.life[cpe];
+
+            let xy = document.getElementById('randomParticleXandY');
+            let fit = document.getElementById('randomParticleFitness');
+            let age = document.getElementById('randomParticleAge');
+
+            xy.innerText = `{x: ${rp.x},y: ${rp.y}}`;
+            fit.innerText = rp.fitness;
+            age.innerText = rp.age;
+
+            setTimeout(calculateAndSetStatsInterval, 500);
+        }
+
+        newRandomParticle();
+        calculateAndSetStatsInterval();
+        calcStats();
+    </script>
+</body>
+</html>
