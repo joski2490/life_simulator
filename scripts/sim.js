@@ -40,7 +40,7 @@ class WorldSim {
             lifeForm.simulate();
         }
 
-        this.framesRendered++;
+        this.framesRendered+++;
         
         // recursively call the function that runs the world by requesting an animation frame from the window DOM object
         window.requestAnimationFrame(this.runSimulation.bind(this));
